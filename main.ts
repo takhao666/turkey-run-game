@@ -18,6 +18,14 @@ import { buildDossier } from './vendor/makefun-game.ts';
 const here = fileURLToPath(new URL('.', import.meta.url));
 const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
 
+// Fail fast with a clear message when the entry is incomplete, instead of
+// writing a half-empty output directory the gate would refuse.
+for (const needed of [join(here, 'game'), join(here, 'game', 'index.html')]) {
+  if (!existsSync(needed)) {
+    throw new Error(`Gobble Dash entry is incomplete: missing ${needed}`);
+  }
+}
+
 mkdirSync(out, { recursive: true });
 cpSync(join(here, 'game'), join(out, 'game'), { recursive: true });
 mkdirSync(join(out, 'screenshots'), { recursive: true });
